@@ -1,6 +1,6 @@
 use crate::{
-    board::{self, Board, Move},
-    piece::{self, Piece},
+    board::{Board, Move},
+    piece::Piece,
 };
 
 pub struct Engine;

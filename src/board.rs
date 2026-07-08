@@ -1,6 +1,6 @@
 use std::fmt::{self, Write};
 
-use crate::{board, piece};
+use crate::piece;
 
 const COLUMN_MASKS: [u64; 8] = [
     0x0101010101010101,      // Column 0
@@ -33,9 +33,6 @@ pub enum ClearType {
 #[derive(Debug, Clone, PartialEq, Eq, Copy)]
 pub struct Board(pub u64);
 impl Board {
-    pub fn new() -> Self {
-        Self(0)
-    }
     #[inline]
     fn get_index(row: u8, col: u8) -> u8 {
         debug_assert!(row < 8 && col < 8, "Coordinates must be between 0 and 7");
@@ -50,11 +47,6 @@ impl Board {
     pub fn set_square(&mut self, row: u8, col: u8) {
         let index = Self::get_index(row, col);
         self.0 |= 1 << index;
-    }
-
-    pub fn clear_square(&mut self, row: u8, col: u8) {
-        let index = Self::get_index(row, col);
-        self.0 &= !(1 << index);
     }
 
     pub fn is_occupied(&self, row: u8, col: u8) -> bool {
