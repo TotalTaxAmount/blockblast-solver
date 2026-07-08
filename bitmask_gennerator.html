@@ -1,0 +1,327 @@
+<!-- Thanks Gemini -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Bitmask Generator (8x8 & 5x5)</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+      }
+
+      h1 {
+        margin-bottom: 5px;
+        color: #2c3e50;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #7f8c8d;
+        font-size: 0.95rem;
+      }
+
+      .toggle-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .toggle-btn {
+        background-color: #e2e8f0;
+        color: #475569;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .toggle-btn.active {
+        background-color: #3b82f6;
+        color: white;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow:
+          0 4px 6px rgba(0, 0, 0, 0.05),
+          0 1px 3px rgba(0, 0, 0, 0.1);
+        width: 440px;
+      }
+
+      .grid-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 440px;
+        width: 100%;
+      }
+
+      .grid {
+        display: grid;
+        gap: 4px;
+        background-color: #e2e8f0;
+        padding: 6px;
+        border-radius: 8px;
+      }
+
+      .grid-8x8 {
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
+      }
+
+      .grid-5x5 {
+        grid-template-columns: repeat(5, 60px);
+        grid-template-rows: repeat(5, 60px);
+      }
+
+      .cell {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+        transition: all 0.15s ease;
+      }
+
+      .grid-8x8 .cell {
+        width: 50px;
+        height: 50px;
+      }
+      .grid-5x5 .cell {
+        width: 60px;
+        height: 60px;
+      }
+
+      .cell:hover {
+        background-color: #f1f5f9;
+        border-color: #94a3b8;
+      }
+
+      .cell.active {
+        background-color: #3b82f6;
+        border-color: #2563eb;
+        color: white;
+      }
+
+      .cell-index {
+        font-size: 0.65rem;
+        opacity: 0.6;
+      }
+
+      .cell.active .cell-index {
+        opacity: 0.8;
+      }
+
+      .results {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .result-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .result-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .result-value {
+        font-family: "Courier New", Courier, monospace;
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: #0f172a;
+        word-break: break-all;
+        text-align: right;
+      }
+
+      .btn {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+        width: 100%;
+      }
+
+      .btn:hover {
+        background-color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bitmask Generator</h1>
+    <p>Top-Left is Index 0 (LSB) &rarr; Right/Down increases significance</p>
+
+    <div class="toggle-container">
+      <button class="toggle-btn active" id="btn8x8">8x8 (64-bit)</button>
+      <button class="toggle-btn" id="btn5x5">5x5 (32-bit)</button>
+    </div>
+
+    <div class="container">
+      <div class="grid-wrapper">
+        <div class="grid grid-8x8" id="grid"></div>
+      </div>
+
+      <button class="btn" id="clearBtn">Clear Board</button>
+
+      <div class="results">
+        <div class="result-box">
+          <span class="result-label" id="lblDecimal">Decimal (u64)</span>
+          <span class="result-value" id="resDecimal">0</span>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Hexadecimal</span>
+          <span class="result-value" id="resHex">0x0000000000000000</span>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Binary</span>
+          <span class="result-value" id="resBinary">00000000...00000000</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const grid = document.getElementById("grid");
+      const resDecimal = document.getElementById("resDecimal");
+      const resHex = document.getElementById("resHex");
+      const resBinary = document.getElementById("resBinary");
+      const clearBtn = document.getElementById("clearBtn");
+      const lblDecimal = document.getElementById("lblDecimal");
+
+      const btn8x8 = document.getElementById("btn8x8");
+      const btn5x5 = document.getElementById("btn5x5");
+
+      let currentMode = "8x8"; // Or '5x5'
+      let boardSize = 64;
+      let boardState = new Array(64).fill(false);
+
+      function initGrid(mode) {
+        currentMode = mode;
+        grid.innerHTML = "";
+
+        if (mode === "8x8") {
+          boardSize = 64;
+          grid.className = "grid grid-8x8";
+          lblDecimal.textContent = "Decimal (u64)";
+        } else {
+          boardSize = 25;
+          grid.className = "grid grid-5x5";
+          lblDecimal.textContent = "Decimal (u32)";
+        }
+
+        boardState = new Array(boardSize).fill(false);
+
+        for (let i = 0; i < boardSize; i++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          cell.dataset.index = i;
+
+          const indexLabel = document.createElement("span");
+          indexLabel.classList.add("cell-index");
+          indexLabel.textContent = i;
+          cell.appendChild(indexLabel);
+
+          cell.addEventListener("click", () => {
+            boardState[i] = !boardState[i];
+            cell.classList.toggle("active", boardState[i]);
+            updateBitmask();
+          });
+
+          grid.appendChild(cell);
+        }
+        updateBitmask();
+      }
+
+      function updateBitmask() {
+        let mask = 0n;
+
+        for (let i = 0; i < boardSize; i++) {
+          if (boardState[i]) {
+            mask |= 1n << BigInt(i);
+          }
+        }
+
+        resDecimal.textContent = mask.toString(10);
+
+        if (currentMode === "8x8") {
+          resHex.textContent =
+            "0x" + mask.toString(16).toUpperCase().padStart(16, "0");
+          let binStr = mask.toString(2).padStart(64, "0");
+          resBinary.textContent = binStr.match(/.{1,8}/g).join(" ");
+        } else {
+          resHex.textContent =
+            "0x" + mask.toString(16).toUpperCase().padStart(8, "0");
+          let binStr = mask.toString(2).padStart(25, "0");
+          // Format 5x5 binary into 5-bit chunks or cleanly separated bytes
+          resBinary.textContent = binStr;
+        }
+      }
+
+      clearBtn.addEventListener("click", () => {
+        boardState.fill(false);
+        document.querySelectorAll(".cell").forEach((cell) => {
+          cell.classList.remove("active");
+        });
+        updateBitmask();
+      });
+
+      btn8x8.addEventListener("click", () => {
+        if (currentMode !== "8x8") {
+          btn5x5.classList.remove("active");
+          btn8x8.classList.add("active");
+          initGrid("8x8");
+        }
+      });
+
+      btn5x5.addEventListener("click", () => {
+        if (currentMode !== "5x5") {
+          btn8x8.classList.remove("active");
+          btn5x5.classList.add("active");
+          initGrid("5x5");
+        }
+      });
+
+      // Fire up the 8x8 layout by default
+      initGrid("8x8");
+    </script>
+  </body>
+</html>
