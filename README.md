@@ -1,5 +1,28 @@
 # Blockblast slover in rust
 
-You can use the html file to show your current layout and then switch to the 5x5 grid to put in the pieces. Then copy and paste the numbers into the main.rs file
+To use:
 
-Frontend coming soon tm
+```
+cargo run
+```
+
+then use the bitmask_generator.html to find the bitmask numbers for your board (8x8) and your pieces (5x5)
+then enter them with
+```
+board [number]
+piece [piece 1 number]
+piece [piece 2 number]
+piece [piece 3 number]
+// You could do as many as you want
+```
+
+then
+```
+solve
+```
+
+Will give your solution if there is one
+```
+reset
+```
+will clear pieces
