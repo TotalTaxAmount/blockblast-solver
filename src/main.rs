@@ -1,4 +1,7 @@
-use std::io::{self, Write};
+use std::{
+    io::{self, Write},
+    process::exit,
+};
 
 use crate::{board::Board, engine::Engine, piece::Piece};
 
@@ -41,15 +44,23 @@ fn main() {
                 pieces = Vec::new();
             }
             "solve" => {
-                println!("{}", board);
                 let line = Engine::slove(board, pieces.clone());
-                println!("{:?}", line);
                 let mut b = board;
+
+                println!("state {}", b.0);
+                // println!("{:?}", line);
+
                 for m in line.moves {
+                    println!("move {} {} {}", m.piece.0, m.pos.0, m.pos.1);
+
                     b.apply_move(&m);
-                    println!("{}", b);
+
+                    println!("state {}", b.0);
                 }
+
+                println!("done");
             }
+            "quit" => exit(0),
             _ => println!("Unknown command"),
         }
     }
