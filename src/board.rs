@@ -1,3 +1,4 @@
+use core::f32;
 use std::fmt::{self, Write};
 
 use crate::piece;
@@ -137,16 +138,12 @@ impl Board {
                 }
 
                 if is_valid {
-                    let num_clears = clear.len();
+                    let num_clears = clear.len() as f32;
                     moves.push(Move {
                         piece: *piece,
                         pos: (row as u8, col as u8),
                         clear,
-                        score: if num_clears == 0 {
-                            piece.0.count_ones() as f32
-                        } else {
-                            8.0 * num_clears as f32
-                        },
+                        score: piece.0.count_ones() as f32 * (1.0 + num_clears) + 8.0 * num_clears,
                     });
                 }
             }
